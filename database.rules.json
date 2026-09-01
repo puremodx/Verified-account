@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "verification": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}
