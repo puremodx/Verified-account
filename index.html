@@ -15,14 +15,15 @@
   <div class="logo">PM</div>
   <section id="loading">
     <h1>Verifying device</h1>
-    <p>Please wait while we validate your verification session.</p>
+    <p>Validating your one-time verification session…</p>
     <div class="spinner"></div>
   </section>
   <section id="ok" class="hidden">
     <div class="ok">✓</div>
     <h1>Verification successful</h1>
     <p>Your device is verified for <strong>12 hours</strong>.</p>
-    <a class="btn" href="https://github.com/puremodx/Verified-account">Return</a>
+    <p>You can now return to the app.</p>
+    <a class="btn" href="javascript:window.close()">Return</a>
   </section>
   <section id="bad" class="hidden">
     <div class="error">!</div>
@@ -32,6 +33,7 @@
   </section>
 </main>
 <script>
+/* GitHub Pages is the public UI. The verification API remains server-side. */
 const API='https://YOUR-HOPWEB-DOMAIN';
 const q=new URLSearchParams(location.search);
 const sid=q.get('sid');
@@ -41,12 +43,14 @@ function showBad(message){$('loading').classList.add('hidden');$('bad').classLis
 function showOk(){$('loading').classList.add('hidden');$('ok').classList.remove('hidden');}
 async function run(){
   if(!sid||!token){showBad('Missing verification parameters.');return;}
+  if(API.includes('YOUR-HOPWEB-DOMAIN')){showBad('Verification API has not been configured yet.');return;}
   try{
     const r=await fetch(API+'/verify.php?sid='+encodeURIComponent(sid)+'&token='+encodeURIComponent(token),{cache:'no-store'});
     const text=await r.text();
-    if(!r.ok){showBad(text.replace(/<[^>]*>/g,'').trim()||'Verification failed.');return;}
+    const clean=text.replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();
+    if(!r.ok){showBad(clean||'Verification failed.');return;}
     if(text.includes('Device Verified')){showOk();return;}
-    showBad('Verification could not be completed.');
+    showBad(clean||'Verification could not be completed.');
   }catch(e){showBad('Could not connect to the verification server.');}
 }
 run();
