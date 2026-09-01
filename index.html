@@ -1,1 +1,55 @@
-
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PureModX • Device Verification</title>
+<meta name="description" content="PureModX device verification">
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at top,#27314a 0,#0d1017 48%,#090b10 100%);color:#fff;padding:20px}.card{width:min(94vw,430px);background:rgba(23,27,36,.94);border:1px solid rgba(255,255,255,.08);border-radius:28px;padding:30px 24px;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center}.logo{width:70px;height:70px;margin:0 auto 18px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(135deg,#5b8cff,#7a5cff);font-weight:900;font-size:24px}.spinner{width:42px;height:42px;border:4px solid rgba(255,255,255,.16);border-top-color:#fff;border-radius:50%;margin:24px auto;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}h1{font-size:27px;margin:0 0 8px}p{margin:8px 0;color:#aeb6c7;line-height:1.55}.hidden{display:none}.btn{display:inline-block;margin-top:20px;padding:13px 20px;border-radius:14px;background:#fff;color:#111;text-decoration:none;font-weight:800}.ok{font-size:58px;line-height:1;margin:18px 0 12px}.error{font-size:56px;line-height:1;margin:18px 0 12px}.small{font-size:13px;color:#7e889c;margin-top:18px;word-break:break-all}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="logo">PM</div>
+  <section id="loading">
+    <h1>Verifying device</h1>
+    <p>Please wait while we validate your verification session.</p>
+    <div class="spinner"></div>
+  </section>
+  <section id="ok" class="hidden">
+    <div class="ok">✓</div>
+    <h1>Verification successful</h1>
+    <p>Your device is verified for <strong>12 hours</strong>.</p>
+    <a class="btn" href="https://github.com/puremodx/Verified-account">Return</a>
+  </section>
+  <section id="bad" class="hidden">
+    <div class="error">!</div>
+    <h1>Verification unavailable</h1>
+    <p id="msg">This verification session is invalid or expired.</p>
+    <p class="small" id="sid"></p>
+  </section>
+</main>
+<script>
+const API='https://YOUR-HOPWEB-DOMAIN';
+const q=new URLSearchParams(location.search);
+const sid=q.get('sid');
+const token=q.get('token');
+const $=id=>document.getElementById(id);
+function showBad(message){$('loading').classList.add('hidden');$('bad').classList.remove('hidden');$('msg').textContent=message||'This verification session is invalid or expired.';if(sid)$('sid').textContent='Session: '+sid;}
+function showOk(){$('loading').classList.add('hidden');$('ok').classList.remove('hidden');}
+async function run(){
+  if(!sid||!token){showBad('Missing verification parameters.');return;}
+  try{
+    const r=await fetch(API+'/verify.php?sid='+encodeURIComponent(sid)+'&token='+encodeURIComponent(token),{cache:'no-store'});
+    const text=await r.text();
+    if(!r.ok){showBad(text.replace(/<[^>]*>/g,'').trim()||'Verification failed.');return;}
+    if(text.includes('Device Verified')){showOk();return;}
+    showBad('Verification could not be completed.');
+  }catch(e){showBad('Could not connect to the verification server.');}
+}
+run();
+</script>
+</body>
+</html>
