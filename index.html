@@ -1,14 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b0912">
-<meta name="robots" content="noindex,nofollow">
-<title>PureModX • Device Verification</title>
-<meta name="description" content="Secure PureModX device verification">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b0912"><meta name="robots" content="noindex,nofollow">
+<title>PureModX • Device Verification</title><meta name="description" content="Secure PureModX device verification">
 <style>
-:root{color-scheme:dark;--bg:#090710;--panel:#11101a;--panel2:#171522;--line:#30283f;--purple:#7838ed;--purple2:#9b63ff;--cyan:#20b7d0;--green:#22bd91;--muted:#9690a8;--white:#f8f6ff;--red:#ff657b;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+:root{color-scheme:dark;--bg:#090710;--panel:#11101a;--line:#30283f;--purple:#7838ed;--purple2:#9b63ff;--green:#22bd91;--muted:#9690a8;--white:#f8f6ff;--red:#ff657b;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 *{box-sizing:border-box}body{margin:0;min-height:100svh;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% -12%,#34205c 0%,#171024 36%,var(--bg) 72%);color:var(--white)}
 .card{width:min(100%,460px);padding:30px 25px 27px;background:linear-gradient(160deg,#171421,#0f0d17 75%);border:1px solid #342944;border-radius:28px;box-shadow:0 24px 80px #0009,0 0 45px #6c36ca18;text-align:center}
 .brand{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:24px}.mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#a56bff,#6427df);display:grid;place-items:center;font-size:16px;font-weight:950;letter-spacing:-1px;box-shadow:0 7px 24px #7c3aed55}.brandname{font-weight:850;letter-spacing:.5px;font-size:18px}.brandname span{color:#b58cff}
@@ -19,135 +15,30 @@ h1{font-size:27px;line-height:1.2;margin:0 0 10px;font-weight:800;letter-spacing
 .session{margin-top:23px;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:#0d0b14;color:#746d83;font-size:11px;overflow-wrap:anywhere}
 .success .state-icon{background:#12392f;border-color:#236c55;color:#54e0b0}.success .pill{background:#102c25;border-color:#225c49;color:#72e6bd}.success .dot{background:#38d6a0;box-shadow:0 0 10px #38d6a0}
 .failure .state-icon{background:#3a1722;border-color:#6b2c40;color:#ff8295}.failure .pill{background:#32151e;border-color:#6b2c40;color:#ff9bab}.failure .dot{background:var(--red);box-shadow:0 0 10px var(--red)}
-.action{display:inline-flex;justify-content:center;align-items:center;min-height:48px;width:100%;margin-top:22px;padding:13px 18px;border:0;border-radius:13px;background:linear-gradient(100deg,#6d2ee3,#883ef4);color:white;font-size:14px;font-weight:850;letter-spacing:.3px;text-decoration:none;cursor:pointer;box-shadow:0 8px 25px #7838ed45}.action:active{transform:translateY(1px)}.help{margin-top:22px;font-size:12px;color:#756d83}.help strong{color:#b9a1e5}
-.hidden{display:none!important}.footer{margin-top:24px;color:#635b70;font-size:10px;letter-spacing:.4px}
+.action{display:inline-flex;justify-content:center;align-items:center;min-height:48px;width:100%;margin-top:22px;padding:13px 18px;border:0;border-radius:13px;background:linear-gradient(100deg,#6d2ee3,#883ef4);color:white;font-size:14px;font-weight:850;letter-spacing:.3px;cursor:pointer;box-shadow:0 8px 25px #7838ed45}.action:active{transform:translateY(1px)}
+.help{margin-top:22px;font-size:12px;color:#756d83}.help strong{color:#b9a1e5}.hidden{display:none!important}.footer{margin-top:24px;color:#635b70;font-size:10px;letter-spacing:.4px}
 @media(max-width:380px){.card{padding:25px 19px;border-radius:23px}h1{font-size:24px}}
-</style>
-</head>
-<body>
+</style></head><body>
 <main class="card" id="card" aria-live="polite">
-  <div class="brand"><div class="mark">PMX</div><div class="brandname">Pure<span>ModX</span></div></div>
-  <section id="loading">
-    <div class="state-icon">⌁</div>
-    <h1>Device Verification</h1>
-    <p>Securely confirming your verification request.<br>Please keep this page open.</p>
-    <div class="spinner" role="status" aria-label="Verifying"></div>
-    <div class="pill"><i class="dot"></i> CONNECTING TO SECURE SERVER</div>
-  </section>
-  <section id="success" class="hidden">
-    <div class="state-icon">✓</div>
-    <h1>Device Verified</h1>
-    <p>Your device has been approved successfully.<br>You can now return to the application.</p>
-    <div class="pill"><i class="dot"></i> VERIFICATION SUCCESSFUL</div>
-    <button class="action" type="button" id="returnBtn">RETURN TO APP</button>
-  </section>
-  <section id="failure" class="hidden">
-    <div class="state-icon">!</div>
-    <h1 id="failureTitle">Verification Failed</h1>
-    <p id="failureMessage">This verification link is invalid or has expired.</p>
-    <div class="pill"><i class="dot"></i> VERIFICATION NOT COMPLETED</div>
-    <button class="action" type="button" id="retryBtn">TRY AGAIN</button>
-  </section>
-  <div class="session hidden" id="sessionLabel"></div>
-  <div class="help">Official <strong>PureModX</strong> device authorization</div>
-  <div class="footer">SECURE SESSION • ONE-TIME VERIFICATION</div>
+<div class="brand"><div class="mark">PMX</div><div class="brandname">Pure<span>ModX</span></div></div>
+<section id="loading"><div class="state-icon">⌁</div><h1>Device Verification</h1><p>Securely confirming your verification request.<br>Please keep this page open.</p><div class="spinner" role="status" aria-label="Verifying"></div><div class="pill"><i class="dot"></i> CONNECTING TO SECURE SERVER</div></section>
+<section id="success" class="hidden"><div class="state-icon">✓</div><h1>Device Verified</h1><p>Your device has been approved successfully.<br>You can now return to the application.</p><div class="pill"><i class="dot"></i> VERIFICATION SUCCESSFUL</div><button class="action" type="button" id="returnBtn">RETURN TO APP</button></section>
+<section id="failure" class="hidden"><div class="state-icon">!</div><h1 id="failureTitle">Verification Failed</h1><p id="failureMessage">This verification link is invalid or has expired.</p><div class="pill"><i class="dot"></i> VERIFICATION NOT COMPLETED</div><button class="action" type="button" id="retryBtn">TRY AGAIN</button></section>
+<div class="session hidden" id="sessionLabel"></div><div class="help">Official <strong>PureModX</strong> device authorization</div><div class="footer">SECURE SESSION • ONE-TIME VERIFICATION</div>
 </main>
 <script>
-/*
- * The GitHub Pages site is only the presentation layer.
- * Firebase writes are performed by the trusted Cloud Function.
- * Keep this endpoint in sync with functions/index.js.
- */
-const API_BASE = 'https://us-central1-puremodx-89421.cloudfunctions.net';
-const params = new URLSearchParams(location.search);
-const sid = params.get('sid') || '';
-const token = params.get('token') || '';
-const card = document.getElementById('card');
-const loading = document.getElementById('loading');
-const success = document.getElementById('success');
-const failure = document.getElementById('failure');
-const sessionLabel = document.getElementById('sessionLabel');
-let started = false;
-
-function showFailure(title, message) {
-  loading.classList.add('hidden');
-  success.classList.add('hidden');
-  failure.classList.remove('hidden');
-  card.classList.add('failure');
-  document.getElementById('failureTitle').textContent = title;
-  document.getElementById('failureMessage').textContent = message;
-}
-function showSuccess() {
-  loading.classList.add('hidden');
-  failure.classList.add('hidden');
-  success.classList.remove('hidden');
-  card.classList.remove('failure');
-  card.classList.add('success');
-}
-function showLoading() {
-  failure.classList.add('hidden');
-  success.classList.add('hidden');
-  loading.classList.remove('hidden');
-  card.classList.remove('failure','success');
-}
-function cleanAddressBar() {
-  try { history.replaceState({}, document.title, location.pathname); } catch (_) {}
-}
-function friendlyError(status, body) {
-  const text = (body || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-  if (status === 404) return ['Session Not Found', 'This verification session does not exist. Start a new request from the app.'];
-  if (status === 409) return ['Link Already Used', 'This one-time verification link has already been used. Return to the app and check its status.'];
-  if (status === 410) return ['Link Expired', 'This verification link has expired. Start a new verification request from the app.'];
-  if (status === 403) return ['Invalid Verification Link', 'The verification token does not match this session.'];
-  if (status === 400) return ['Invalid Request', 'The verification link is incomplete or malformed.'];
-  return ['Could Not Verify Device', text || 'The secure verification service returned an error. Please try again later.'];
-}
-async function verifyDevice() {
-  if (started) return;
-  started = true;
-  showLoading();
-  if (!sid || !token) {
-    showFailure('Missing Verification Link', 'Open the complete verification link generated by your Android app.');
-    return;
-  }
-  if (!/^[a-f0-9]{48}$/.test(sid) || !/^[a-f0-9]{64}$/.test(token)) {
-    showFailure('Invalid Verification Link', 'The session ID or one-time token has an invalid format.');
-    return;
-  }
-  sessionLabel.textContent = 'SESSION • ' + sid.slice(0,8) + '…' + sid.slice(-6);
-  sessionLabel.classList.remove('hidden');
-  cleanAddressBar();
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20000);
-  try {
-    const response = await fetch(API_BASE + '/verify?sid=' + encodeURIComponent(sid) + '&token=' + encodeURIComponent(token), {
-      method: 'GET',
-      cache: 'no-store',
-      redirect: 'follow',
-      signal: controller.signal
-    });
-    const body = await response.text();
-    if (response.ok && body.includes('Device Verified')) {
-      showSuccess();
-    } else {
-      const err = friendlyError(response.status, body);
-      showFailure(err[0], err[1]);
-    }
-  } catch (error) {
-    started = false;
-    showFailure('Connection Problem', error.name === 'AbortError'
-      ? 'The verification server took too long to respond. Check your internet connection and try again.'
-      : 'Could not reach the verification server. Check your internet connection and try again.');
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-document.getElementById('retryBtn').addEventListener('click', verifyDevice);
-document.getElementById('returnBtn').addEventListener('click', () => {
-  document.getElementById('returnBtn').textContent = 'RETURN TO THE APP';
-  document.getElementById('returnBtn').disabled = true;
-});
+const API_BASE='https://us-central1-puremodx-89421.cloudfunctions.net';
+const params=new URLSearchParams(location.search),sid=params.get('sid')||'',token=params.get('token')||'';
+const card=document.getElementById('card'),loading=document.getElementById('loading'),success=document.getElementById('success'),failure=document.getElementById('failure'),sessionLabel=document.getElementById('sessionLabel');
+let started=false;
+function showFailure(title,message){loading.classList.add('hidden');success.classList.add('hidden');failure.classList.remove('hidden');card.classList.add('failure');document.getElementById('failureTitle').textContent=title;document.getElementById('failureMessage').textContent=message;}
+function showSuccess(){loading.classList.add('hidden');failure.classList.add('hidden');success.classList.remove('hidden');card.classList.remove('failure');card.classList.add('success');}
+function showLoading(){failure.classList.add('hidden');success.classList.add('hidden');loading.classList.remove('hidden');card.classList.remove('failure','success');}
+function friendlyError(status,body){const text=(body||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();if(status===404)return['Session Not Found','This verification session does not exist. Start a new request from the app.'];if(status===409)return['Link Already Used','This one-time verification link has already been used. Return to the app and check its status.'];if(status===410)return['Link Expired','This verification link has expired. Start a new verification request from the app.'];if(status===403)return['Invalid Verification Link','The verification token does not match this session.'];if(status===400)return['Invalid Request','The verification link is incomplete or malformed.'];return['Could Not Verify Device',text||'The secure verification service returned an error. Please try again later.'];}
+async function verifyDevice(){if(started)return;started=true;showLoading();if(!sid||!token){showFailure('Missing Verification Link','Open the complete verification link generated by your Android app.');return;}if(!/^[a-f0-9]{48}$/.test(sid)||!/^[a-f0-9]{64}$/.test(token)){showFailure('Invalid Verification Link','The session ID or one-time token has an invalid format.');return;}sessionLabel.textContent='SESSION • '+sid.slice(0,8)+'…'+sid.slice(-6);sessionLabel.classList.remove('hidden');try{history.replaceState({},document.title,location.pathname);}catch(_){}
+const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),20000);
+try{const response=await fetch(API_BASE+'/verify?sid='+encodeURIComponent(sid)+'&token='+encodeURIComponent(token),{method:'GET',cache:'no-store',redirect:'follow',signal:controller.signal});const body=await response.text();if(response.ok&&body.includes('Device Verified'))showSuccess();else{const err=friendlyError(response.status,body);showFailure(err[0],err[1]);}}catch(error){started=false;showFailure('Connection Problem',error.name==='AbortError'?'The verification server took too long to respond. Check your internet connection and try again.':'Could not reach the verification server. Check your internet connection and try again.');}finally{clearTimeout(timeout);}}
+document.getElementById('retryBtn').addEventListener('click',verifyDevice);
+document.getElementById('returnBtn').addEventListener('click',()=>{window.close();setTimeout(()=>{const b=document.getElementById('returnBtn');b.textContent='CLOSE THIS TAB AND RETURN TO THE APP';b.disabled=false;},250);});
 verifyDevice();
-</script>
-</body>
-</html>
+</script></body></html>
