@@ -1,58 +1,61 @@
 # PureModX Device Verification
 
-This repository hosts the GitHub Pages verification screen for the PureModX Android verification dialog.
+This repository contains the GitHub Pages verification website and Firebase Cloud Functions backend for the PureModX Android Java dialog.
 
-## Frontend
+## Website
 
 GitHub Pages URL:
-
 `https://puremodx.github.io/Verified-account/`
 
-The page reads the one-time `sid` and `token` query parameters and calls the Firebase HTTPS function:
-
-`GET https://us-central1-puremodx-89421.cloudfunctions.net/verify?sid=...&token=...`
-
-The website does not write to Realtime Database directly. The trusted Cloud Function validates the one-time token, marks the session as used, and writes the verified device record.
+The Android app calls `startVerification`, opens the returned website URL, and polls `checkStatus`. The website sends the one-time `sid` and `token` to the `verify` Cloud Function. The function validates and consumes the token, then writes the device approval using the Firebase Admin SDK.
 
 ## Firebase project
 
 - Project ID: `puremodx-89421`
 - Realtime Database: `https://puremodx-89421-default-rtdb.firebaseio.com/`
 - Functions region: `us-central1`
-- Functions runtime: Node.js 20
+- Runtime: Node.js 20
 
-## Android client contract
+## Exact Android client contract
 
-The Android app must use the same stable installation ID for both calls:
+Use one stable installation ID generated once and stored locally. Do not use a new random ID for each request.
 
-1. `POST /startVerification` with JSON `{"installation_id":"<stable-installation-id>"}`
-   - Response contains `session_id`, `verification_url`, and `expires_at`.
-   - Open `verification_url` in the browser.
-2. Poll `POST /checkStatus` with the same JSON `{"installation_id":"<same-stable-installation-id>"}`.
-   - Response is `{"ok":true,"verified":true,"expires_at":<unix-ms>}` after approval.
-3. Unlock the app only when `verified === true` and the returned expiry is still in the future.
+1. `POST https://us-central1-puremodx-89421.cloudfunctions.net/startVerification`
+   JSON: `{"installation_id":"<stable-installation-id>"}`
+   Response: `{"ok":true,"session_id":"...","verification_url":"...","expires_at":...}`
+2. Open the returned `verification_url` in the browser.
+3. Poll `POST https://us-central1-puremodx-89421.cloudfunctions.net/checkStatus`
+   JSON: `{"installation_id":"<same-stable-installation-id>"}`
+   Response after approval: `{"ok":true,"verified":true,"expires_at":<unix-ms>}`
+4. Unlock only when `ok == true`, `verified == true`, and `expires_at > System.currentTimeMillis()`.
 
-Do not poll the old `users/{deviceId}` path for this flow. The Cloud Functions use these server-owned paths:
+The app must poll `checkStatus`, not the legacy `users/{deviceId}` path. A practical polling interval is 3–5 seconds, with a client-side maximum wait equal to the 15-minute session lifetime. The 12-hour access period begins when the website successfully verifies the device.
+
+## Database paths
+
+Cloud Functions own these paths:
 
 - `verification/sessions/{sid}`
 - `verification/devices/{sha256(installation_id)}`
 
-Realtime Database rules deny direct client reads and writes under `verification`; Admin SDK calls from Cloud Functions bypass those client rules.
+Client rules deny direct reads and writes under `verification`. Cloud Functions use the Admin SDK and bypass client rules. Do not make these paths publicly writable.
 
 ## Deploy
 
-From the repository root, after authenticating with the Firebase CLI and selecting project `puremodx-89421`:
+Install Node.js 20 and Firebase CLI, authenticate, then run from the repository root:
 
 ```sh
 firebase use puremodx-89421
+cd functions
+npm install
+cd ..
 firebase deploy --only functions,database
 ```
 
-Enable GitHub Pages for the `main` branch and repository root if it is not already enabled. A GitHub Pages commit can take a few minutes to publish.
+Enable GitHub Pages for the `main` branch and repository root. GitHub Pages publishes the website independently of Cloud Functions deployment.
 
-## Security notes
+## Important deployment note
 
-- Never put Firebase service-account credentials or private API secrets in `index.html`.
-- The verification token is a one-time bearer secret. Do not share the full verification URL.
-- Only the Cloud Function should write approval state.
-- The Android app must not treat opening the browser or seeing a success-looking page as approval; it must confirm through `checkStatus`.
+Committing source code does not deploy Firebase Cloud Functions. After deployment, test the complete flow: app starts a session, browser verifies the one-time link, and app receives `verified: true` from `checkStatus`.
+
+Never put Firebase service-account credentials in the website or Android APK. Only the trusted Cloud Functions should write approval state.
